@@ -1,0 +1,775 @@
+\documentclass[9pt]{article}
+\usepackage[left=0.7in,right=0.7in,top=1in,bottom=0.7in]{geometry}
+\usepackage{graphicx} % Required for inserting images
+\usepackage[noend]{algpseudocode}
+\usepackage[plain]{algorithm}
+\usepackage{amsmath,amsthm,amssymb,scrextend}
+\usepackage{fancyhdr}
+\usepackage{parskip}
+\pagestyle{fancy}
+
+\setlength\parindent{0pt}
+
+\newcommand{\de}{\textbf{DEF: }}
+\newcommand{\thm}{\textbf{THM: }}
+\newcommand{\pro}{\textbf{Property: }}
+\newcommand{\rmk}{\textbf{RMK: }}
+\newcommand{\indep}{\perp \!\!\! \perp}
+\newcommand{\x}{\vec{x}}
+\newcommand{\w}{\vec{w}}
+
+\newcommand{\N}{\mathbb{N}}
+\newcommand{\Z}{\mathbb{Z}}
+\newcommand{\I}{\mathbb{I}}
+\newcommand{\R}{\mathbb{R}}
+\newcommand{\Q}{\mathbb{Q}}
+\renewcommand{\qed}{\hfill$\blacksquare$}
+\let\newproof\proof
+\renewenvironment{proof}{\begin{addmargin}[1em]{0em}\begin{newproof}}{\end{newproof}\end{addmargin}\qed}
+% \newcommand{\expl}[1]{\text{\hfill[#1]}$}
+
+% preferred pseudocode style
+\algrenewcommand{\algorithmicprocedure}{}
+\algrenewcommand{\algorithmicthen}{}
+ 
+\newenvironment{theorem}[2][Theorem]{\begin{trivlist}
+\item[\hskip \labelsep {\bfseries #1}\hskip \labelsep {\bfseries #2}]}{\end{trivlist}}
+\newenvironment{lemma}[2][Lemma]{\begin{trivlist}
+\item[\hskip \labelsep {\bfseries #1}\hskip \labelsep {\bfseries #2}]}{\end{trivlist}}
+\newenvironment{problem}[2][Problem]{\begin{trivlist}
+\item[\hskip \labelsep {\bfseries #1}\hskip \labelsep {\bfseries #2}]}{\end{trivlist}}
+\newenvironment{exercise}[2][Exercise]{\begin{trivlist}
+\item[\hskip \labelsep {\bfseries #1}\hskip \labelsep {\bfseries #2}]}{\end{trivlist}}
+\newenvironment{reflection}[2][Reflection]{\begin{trivlist}
+\item[\hskip \labelsep {\bfseries #1}\hskip \labelsep {\bfseries #2}]}{\end{trivlist}}
+\newenvironment{proposition}[2][Proposition]{\begin{trivlist}
+\item[\hskip \labelsep {\bfseries #1}\hskip \labelsep {\bfseries #2}]}{\end{trivlist}}
+\newenvironment{corollary}[2][Corollary]{\begin{trivlist}
+\item[\hskip \labelsep {\bfseries #1}\hskip \labelsep {\bfseries #2}]}{\end{trivlist}}
+
+\title{DSGuide}
+\author{Tovi Tu}
+\date{March 2023}
+
+\begin{document}
+
+\maketitle
+
+\section{Probability Theory}
+
+
+\newpage
+\section{Fundamental Theorems}
+
+\de Convex Functions: For every $0\le t\le1$,
+$$
+f(tx_1+(1-t)x_2)\le tf(x-1)+(1-t)f(x_2)
+$$
+\de Function $f$ is a $\rho$-Lipschitz function if 
+$$
+||f(\vec u)-f(\vec v)||\le\rho||\vec u - \vec v||
+$$
+\begin{theorem}{}:
+Let $A$ be a convex open set, and $f: \mathbb{A}\to\mathbb{R}$ be a convex function, then $f$ is $\rho$-Lipschitz if and only if 
+$$
+\forall\vec w \in A,||\nabla f(\vec w)||\le \rho
+$$
+\end{theorem}
+\begin{theorem}{Jensen's Inequality}
+If $f$ is a convex function, 
+$$
+f(\frac{1}{T}\sum_{i}\vec x_i) \le \frac{1}{T}\sum_if(\x_i)
+$$
+\end{theorem}
+\begin{theorem}
+{Generalized Inverse}
+\end{theorem}
+\begin{theorem}
+{Singular Value Decomposition}
+\end{theorem}
+\begin{theorem}{Generalized Inverse}
+\end{theorem}
+
+\newpage
+\section{Maximum Likelihood Theory}
+\begin{itemize}
+    \item Estimate model parameters with MLE which makes formal theory of statistical inference possible
+    \item The inference procedures are asymptotically optimal under regularity conditions
+\end{itemize}
+
+\subsection{Likelihood Function}
+
+Let $X$ be a random variable and $f_X(x|\theta)$ be the probability function of X. For a sample of $x_1, ..., x_n$ which are iid random variables generated from $f_X$. Then, define the probability of observing the sample given $\theta$ as 
+$$
+L(\theta:x_1, ..., x_n) = \prod_{i=1}^{n}f(x_i;\theta)
+$$
+For computational simplicity, we can transform the function to log space. Since log is a monotonous function, the transformed function reaches the maximum at the same $\theta$ as the original function.
+$$
+l(\theta:x_1, ..., x_n) = \sum_{i=1}^{n}log\circ f(x_i;\theta)
+$$
+\subsection{Maximum Likelihood Estimator}
+
+\de the maximum likelihood estimator to be
+$$
+\hat \theta = argmax\ L(\theta; x_1,...,x_n) = argmax\ l(\theta;x_1, ..., x_n)
+$$
+\subsubsection{Score Function}
+
+a.k.a likelihood function/estimating function; The function used to optimize the MLE.
+$$
+U(\theta) =\frac{\partial log\ f(x;\theta)}{\partial \theta} = 0
+$$
+
+In case where an analytical solution is not possible, numerical methods, such as gradient descent should be used. \newline
+
+\subsubsection{Regularity Conditions}
+\begin{enumerate}
+    \item R0: (Identifiable Model) $\theta \not = \theta' \implies f(x;\theta) \not = f(x;\theta)$.
+    \item R1: (Common Support) $f(x;\theta)$ have common support for all $\theta \in \Theta$; The support of $X_i$ does not depends on $\theta$.
+    \item R2: The true parameter $\theta_0$ is an interior point of $\Theta$
+    \item R3: $f(x;\theta)$ is twice differentiable with respect to $\theta$
+    \item R4: $\int f(x;\theta)$ is twice differentiable with respect to $\theta$
+    \item R5: $\int f(x;\theta)$ is three times differentiable with respect to $\theta$, and for all $\theta \in \Theta,\ \exists M(x)\ s.t.\ |\frac{\partial^3log(f(x;\theta))}{\partial \theta^3}| \le M(x)$ and $\int M(x)f(x;\theta)dx < \infty$.
+\end{enumerate}
+
+\begin{theorem}{Probability of Maximum Likelihood}
+
+ Let $\theta_0$ be the true parameter. Assume $E[f(X_i;\theta)/f(X_i;\theta_0)]$ exists. Under assumptions R0 and R1,
+$$
+    \lim_{n\to \infty} P_{\theta_0}[L(\theta_0, X) > L(\theta, X)] = 1,\ \forall \theta \not = \theta_0
+$$
+\end{theorem} 
+
+\begin{proof}
+Since $\theta_0$ is the true parameter,  $L(\theta)$ is maximized at $\theta_0$.
+        \begin{align*}
+        L(\theta_0) &> L(\theta)\\
+        \frac{1}{n}\sum^n_{i=1}log \left[ \frac{f(X_i;\theta)}{f(X_i;\theta_0)}\right] &< 0\\
+        E_{\theta_0}\left[log\ \frac{f(X_i;\theta)}{f(X_i;\theta_0)}\right] &< 0 &&[\text{Law of Large Number}]\\
+        E_{\theta_0}\left[log\ \frac{f(X_i;\theta)}{f(X_i;\theta_0)}\right] &< log\ E_{\theta_0}\left[ \frac{f(X_i;\theta)}{f(X_i;\theta_0)}\right] && [\text{Jensen's Inequality}]
+    \end{align*}
+By the definition of expected value,
+\begin{align*}
+    E_{\theta_0}\left[\frac{f(X_i;\theta)}{f(X_i;\theta_0)}\right] &= \int \frac{f(X_i;\theta)}{f(X_i;\theta_0)} f(X_i;\theta_0)dx = 1
+\end{align*}
+Given that $f(X_i;\theta)$ has a common support,
+\begin{align*}
+    \frac{1}{n}\sum^n_{i=1}log \left[ \frac{f(X_i;\theta)}{f(X_i;\theta_0)}\right] &< 0\\
+    \lim_{n\to \infty} P[L(\theta_0, X) > L(\theta, X)] =1
+\end{align*}
+\end{proof}
+
+\begin{theorem}{MLE of a Function of Parameter}
+    Let $\hat \theta$ be the MLE of $\theta_0$. Then, for a parameter of interest, $\eta = g(\theta)$,  $g(\hat\theta)$ is the mle of $\eta$.
+\end{theorem}
+
+\subsubsection{Cramer-Rao Lower Bound}
+\thm Let $X_i\sim f(x;\theta)$ be iid random variables satisfying R0-R4. Let $\hat \theta$ be an unbiased estimate of $\theta$. Then,
+$$
+    Var(\hat \theta) \ge (nI(\theta))^{-1}
+$$
+where $I(\theta)=-E(\frac{\partial^2 log(f)}{\partial \theta \partial \theta^T})$ is the Fisher Information.
+\begin{proof}
+    For any valid pdf,
+        \begin{align*}
+        1 &= \int^\infty_{-\infty} f(x;\theta)dx\\
+        0 &= \frac{\partial}{\partial \theta} \int^\infty_{-\infty} f(x;\theta)dx\\
+        0 &= \int^\infty_{-\infty} \frac{\partial f(x;\theta)}{\partial \theta}dx &&[R1-R4]\\
+        0 &= \int^\infty_{-\infty} \frac{1}{f(x;\theta)} \frac{\partial f(x;\theta)}{\partial \theta} f(x;\theta)dx\\
+        0 &= \int^\infty_{-\infty} \frac{\partial log\ f(x;\theta)}{\partial \theta}f(x;\theta)dx\\
+    \end{align*}
+    Let $\frac{\partial log\ f(x;\theta)}{\partial \theta}$ be a random variable. Then,
+        $$
+        E\left[\frac{\partial log\ f(x;\theta)}{\partial \theta}\right] = 0 
+    $$
+    Further differentiating yields:
+        \begin{align*}
+        \int^\infty_{-\infty} \frac{\partial^2 log\ f(x;\theta)}{\partial \theta^2}f(x;\theta) + \frac{\partial log\ f(x;\theta)}{\partial \theta}\frac{\partial log\ f(x;\theta)}{\partial \theta}f(x;\theta)dx = 0 \: (1)
+    \end{align*}
+    Let $I(\theta) = \int^\infty_{-\infty}\frac{\partial log\ f(x;\theta)}{\partial \theta}\frac{\partial log\ f(x;\theta)}{\partial \theta}f(x;\theta)dx = E\left[(\frac{\partial log\ f(x;\theta)}{\partial \theta})^2\right]$ be the variance of the r.v.
+    
+    By the equation above, the fisher information may be calculated as
+    $$
+       - \int^\infty_{-\infty} \frac{\partial^2 log\ f(x;\theta)}{\partial \theta^2}f(x;\theta)dx = -E\left[ \frac{\partial^2 log\ f(x;\theta)}{\partial \theta^2} \right]
+    $$
+\end{proof}     
+
+The equation (1) is also known as the Bartlett's equation in the following form:
+$$
+E_\theta\left[ \frac{\partial^2 l}{\partial \theta^2} \right] + Var_\theta\left[ \frac{\partial l}{\partial \theta} \right] = 0
+$$
+
+\de An estimator $\hat \theta$ such that $Var(\hat \theta) = (nI(\theta))^{-1}$ is an efficient estimator.
+
+\rmk
+\begin{itemize}
+    \item If $X \indep Y$, then $I_{X,Y}(\theta) = I_X(\theta) + I_Y(\theta)$
+    \item If $X_1...X_n$ is a random sample of size n, then the fisher information about $\theta$ is $nI(\theta)$, where $I(\theta)$ is the Fisher Information about $\theta$ contained in a single observation $X_i$.
+\end{itemize}
+\subsubsection{Efficiency}
+
+\de The efficiency of an unbiased estimator is 
+$$
+    e(\hat \theta) = \frac{(nI(\theta))^{-1}}{Var(\hat \theta)}
+$$
+
+\rmk
+\begin{itemize}
+    \item $e(\hat \theta) \le 1$
+    \item $\hat \theta$ is efficient iff $e(\hat \theta) = 1$
+\end{itemize}
+
+\de The relative efficiency between two unbiased estimators $(\hat \theta_1 \text{ and } \hat \theta_2)$ is 
+$$
+    re(\hat \theta_1, \hat \theta_2) = \frac{e(\hat \theta_1)}{e(\hat \theta_2)} = \frac{Var(\hat \theta_2)}{Var(\hat \theta_1)}
+$$
+\rmk If $re(\hat \theta_1, \hat \theta_2) > 1$, $\hat \theta_1$ is a better estimator since it has better efficiency and less variance.
+
+\subsubsection{Asymptotic Behavior of MLE}
+\de An estimator is asymptotically unbiased if
+$$
+\lim_{n \to \infty} E(\hat \theta) = \theta
+$$
+
+\de An estimator is asymptotically efficient if $\hat \theta$ is asymptotically unbiased and 
+$$
+    AE(\hat \theta) := \lim_{n\to \infty} e(\hat \theta) = 1
+$$
+where $AE(\hat \theta)$ is the asymptotic efficiency.
+
+\de The asymptotic relative efficiency between $\hat \theta_1$ and $\hat \theta_2$ is 
+$$
+    ARE(\hat \theta_1, \hat \theta_2) := \lim_{n\to \infty} re(\hat \theta_1, \hat \theta_2) = \lim_{n\to \infty}\frac{Var(\hat \theta_2)}{Var(\hat \theta_1)}
+$$
+
+\begin{theorem}Asymptotic Normality of MLE
+
+Assume R0-R5 hold and $0<I(\theta_0)<\infty$. If $\hat \theta$ is a solution to the likelihood equation such that $\hat \theta \overset{P}{\to} \theta_0$, then
+$$
+    \sqrt{n}(\hat \theta - \theta_0) \overset{D}{\to} N(0, (I(\theta_0))^{-1]})
+$$
+\end{theorem}
+
+\subsection{Maximum Likelihood Tests}
+We often want to test the following hypothesis:
+$$
+    H_0: \theta = \theta_0 ;\ H_1: \theta \not = \theta_0
+$$
+However, the distribution of $\theta_0$ under $H_0$ is unknown and the pivotal statistics cannot be calculated. Thus, we relax this restriction to a known asymptotic distribution.
+
+\subsubsection{Wald Type Test}
+From previous theorem, we known that
+$$
+    \sqrt{n}(\hat \theta - \theta_0) \overset{D}{\to} N(0, (I(\theta_0))^{-1]}) \iff \sqrt{nI(\theta_0)}(\hat \theta - \theta_0) \overset{D}{\to} N(0,1)
+$$
+Therefore, under $H_0$
+$$
+    \chi^2_{W} := [\sqrt{nI(\hat \theta)(\hat \theta -\theta_0)}]^2 \sim \chi^2_1 
+$$
+We reject $H_0$ in favor of $H_1$ if $\chi^2_{W} \ge \chi^2_{1,\alpha}$
+
+\subsubsection{Confidence Interval for Wald Test}
+With wald statistics, under the assumption that $n>30$ we may construct an asymptotic confidence interval for the MLE:
+$$
+(\hat \theta -z_{\alpha/2}(nI(\hat \theta))^{-1/2})
+$$
+
+\subsubsection{Likelihood Ratio Test}
+Under $H_0$, $L(\theta)$ is asymptotically maximized at $\theta_0$. 
+
+\de Likelihood Ratio to be 
+$$
+\Lambda := \frac{L(\theta_0)}{L(\hat \theta_n)} \le 1
+$$
+Test statistics:
+\begin{align*}
+    -2\log\lambda &= 2(log\ L(\hat \theta_n) - log\ L(\theta_0))\\
+    &= [\sqrt{n}(\hat \theta_n -\theta_0)]^2 \left[ -\frac{1}{n}\sum_{i=1}^{n}\frac{\partial^2}{\partial \theta^2}log\ f(X_i;\theta_0) \right]\\
+    &\overset{D}{\to} \left[ N(0,1) \right]^2 = \chi^2_1
+\end{align*}
+We reject $H_0$ in favor of $H_1$ if $\Lambda \le C$ s.t. $\alpha = P(\Lambda \le C|H_0)$ or, specifically, if $-2log\Lambda \ge \chi^2_{1,\alpha}$
+
+\subsubsection{Score Test}
+From previous theorem,
+$$
+E\left[ \frac{\partial log\ f(X_i;\theta_0)}{\partial \theta} \right]=0, \; Var\left[ \frac{\partial log\ f(X_i;\theta_0)}{\partial \theta} \right] = I(\theta_0)
+$$
+By CLT,
+$$
+    \frac{\sqrt{n}(\frac{1}{n}\frac{\partial}{\partial \theta}l(\theta_0))}{\sqrt{I(\theta_0)}} \overset{D}{\to} N(0,1)
+$$
+Then,
+$$
+   \chi^2_R \left[\sqrt{nI(\theta_0)}\frac{\partial}{\partial \theta}l(\theta_0)\right]^2 \overset{D}{\to} \chi^2_1
+$$
+We reject $H_0$ if $\chi^2_R \le \chi^2_{1,\alpha}$
+
+\subsection{Most Power Test}
+\de C is a best rejection region of size $\alpha$ for the test if 
+$$
+    P((X_1...X_n)\in C|\theta=\theta_0) = \alpha
+$$
+\de A test based on C is the most powerful test if
+$$
+    P((X_1...X_n)\in C|\theta=\theta_1) \ge P((X_1...X_n)\in C'|\theta=\theta_1)
+$$
+for any $C'$ such that $P((X_1...X_n)\in C'|\theta=\theta_0) = \alpha$\newline
+
+\de C is a uniform most powerful rejection region of size $\alpha$ for the test if C is a best rejection region of size $\alpha$ for $H_0: \theta = \theta_0 \; H_1:\theta=\theta_1$ for all $\theta_1 \in \Theta$. 
+\begin{theorem} {Neyman-Pearson Theorem}
+The Likelihood Ratio Test is a most powerful test and provides a best rejection region of size $\alpha$ for testing $H_0: \theta = \theta_0 \; H_1:\theta=\theta_1$.
+\end{theorem}
+
+\newpage
+\section{Linear Regression Models}
+\subsection{Simple Linear Regression}
+\subsection{Ordinary Linear Regression}
+\subsection{Analysis of Variance}
+The Analysis of Variance is a method to compare the differences between $k$ groups treatments of interest. It often used to compare the effect of the treatments on subjects in a designed manner. 
+
+\subsection{One-way Balanced ANOVA}
+Consider the observed data as following
+\begin{center}
+\begin{tabular}{ c  c c } 
+\hline
+\multicolumn{3}{c}{Treatment}\\
+ \hline
+ \multicolumn{1}{c}{1} & \multicolumn{1}{c}{2} & \multicolumn{1}{c}{3}\\
+ y & y & y  \\
+ \hline
+ $y_{11}$  &  $y_{12}$ &  $y_{13}$ \\
+ $y_{21}$  &  $y_{22}$ &  $y_{23}$ \\
+ $y_{31}$  &  $y_{32}$ &  $y_{33}$ \\
+ \hline
+\end{tabular}
+\end{center}
+Imagine there are $k$ groups with a group size of $n$. The $y_{ij}$ are the data observed during experiments. We may treat categories/treatments as categorical variable, with which we fit a linear regression model.
+
+\subsection{ANOVA Model}
+The ANOVA model is formulated as:
+$$
+y = \mu + \tau_i + \epsilon,\ i=1...k,\ j=1...n
+$$
+where $\mu$ is the average outcome among all groups; $\tau_1$ is the average difference from the overall group average for the i-th treatment; $\epsilon_{i,j}$ is the stochastic error for the j-th individual in the i-th treatment.
+
+\subsection{Identifiability}
+Unlike an ordinary linear regression, the $X$ matrix is designed such that we use 1 or 0 to encode the categorical variable. For the toy data above, we may write
+$$
+X = \begin{bmatrix}
+    1 & 1 & 0 & 0\\
+    1 & 1 & 0 & 0\\
+    1 & 1 & 0 & 0\\
+    1 & 0 & 1 & 0\\
+    1 & 0 & 1 & 0\\
+    1 & 0 & 1 & 0\\
+    1 & 0 & 0 & 1\\
+    1 & 0 & 0 & 1\\
+    1 & 0 & 0 & 1\\
+\end{bmatrix}
+$$
+where the first column of 1's represent the intercept.\par
+
+Recall that to obtain the estimate for $\beta$,
+$$
+\hat \beta = (X^TX)^{-1}X^Ty
+$$
+Observe that the design matrix $X$ above does not have full rank. Therefore, the inverse of $X^TX$ does not exits. This is the identifiability issue where one $\beta$ cannot be identified since it fully depends on other data. Here we present two solutions to this problem.
+
+\subsubsection{Generalized Inverse}
+TBA
+
+\subsubsection{Contrasts / Constrains}
+By manipulating the design matrix, we can reduce the number of estimates so that the altered design matrix has full rank. That is to say, the linear combination of $\beta$ is still estimable. However, the interpretation of  $\beta$ will change accordingly.\par
+
+One common constrain to impose is the sum contrast:
+$$
+\sum_{i=1}^{k}\tau_i = 0
+$$
+Therefore, for the example above, we may re-formulate the model as
+\begin{align*}
+    y &= \mu  + x_1\beta_1 + x_2\beta_2 + x_3\beta\\
+    &= \mu + x_1\beta_1 + x_2\beta_2 + x_3(-\beta_1-\beta_2)\\
+    &= \mu + \beta_1(x_1-x_3) + \beta_2(x_2-x_3)
+\end{align*}
+Therefore, the new design matrix is
+$$
+X = \begin{bmatrix}
+    1 & 1 & 0\\
+    1 & 1 & 0\\
+    1 & 1 & 0\\
+    1 & 0 & 1\\
+    1 & 0 & 1\\
+    1 & 0 & 1\\
+    1 & -1 & -1\\
+    1 & -1 & -1\\
+    1 & -1 & -1\\
+\end{bmatrix}
+$$
+Observe that matrix is no longer singular. Besides sum contrast, other contrasts are also available. 
+
+\subsection{Decomposition of  Error}
+We may decompose the source of sum squared error into two parts:
+$$
+\sum_{i=1}^{k}\sum_{j=1}^{n_i}(y_{ij} - \bar y)^2 = \sum_{i=1}^{k}\sum_{j=1}^{n_i}(y_{ij} - \bar y_{i\cdot})^2 + \sum^k_{i=1}(\bar y_i - \bar y)^2
+$$
+The error terms are called total sum of squared error, residual sum of errors, and sum of squared error due to regression. In short, they are \textbf{SST}, \textbf{SSE}, and \textbf{SSR}, respectively.
+\begin{proof}
+    \begin{align*}
+        \sum_{i=1}^{k}\sum_{j=1}^{n_i}(y_i-\bar y)^2 &=  \sum_{i=1}^{k}\sum_{j=1}^{n_i}(y_{ij} - \bar y_{i\cdot} + \bar y_{i\cdot} -\bar y)^2\\
+        &= \sum_{i=1}^{k}\sum_{j=1}^{n_i}(y_{ij} - \bar y_{i\cdot})^2 - 2(y_{ij}-\bar y_{i\cdot})(\bar y_{i,\cdot} - \bar y) + (\bar y_{i\cdot} - \bar y)^2\\
+    \end{align*}
+    It is left to show that $\sum_{i=1}^{k}\sum_{j=1}^{n_i}2(y_{ij}-\bar y_{i\cdot})(\bar y_{i,\cdot} - \bar y) = 0$ 
+    \begin{align*}
+        \sum_{i=1}^{k}\sum_{j=1}^{n_i}2(y_{ij}-\bar y_{i\cdot})(\bar y_{i,\cdot} - \bar y) &= 2\sum_{i=1}^{k}(\bar y_{i,\cdot} - \bar y)\sum_{j=1}^{n_i}(y_{ij}-\bar y_{i\cdot})\\
+        &= 2\sum_{i=1}^{k}(\bar y_{i,\cdot} - \bar y)[\sum_{j=1}^{n_i}y_{ij}-n\bar y_{i\cdot}]
+    \end{align*}
+    Recall that  when minimizing the sum squared error, we let
+    \begin{align*}
+        \frac{\partial SSE}{\partial \bar y_{i\cdot}} &= 2\sum_{j=1}^{n_i} (y_{ij} - \bar y_{i\cdot}) = 0
+    \end{align*}
+    Therefore, we can conclude the proof.
+\end{proof}
+
+\rmk From the derivative, we observe that the OLSE are indeed the group means.
+
+\subsection{Testing for Difference in Group Means}
+In ANOVA, we are often interested in the effect of different treatments. We can compare this by comparing the $k$ group means. Therefore, the test hypothesis is
+$$
+H_0: \tau_1=\tau_2=\tau_3\ H_a: \tau_i\not=\tau_j\ \text{for some }i\not = j
+$$
+Intuitively, \textbf{SSR} is the variance captured by the model, while \textbf{SSE} is not captured by the model. $SSR/\sigma^2$ and $SSE/\sigma^2$ are assumed to follow a $\chi^2$ distribution with different degrees of freedom. Thus,
+$$
+F = \frac{SSR/k}{SSE/(n-k-1)} \sim F_{k, N-k-1}
+$$
+For \textbf{SSE}, we have $N=kn$ observations in total and we estimate $k+1$ parameters. Thus, the degree of freedom is $N-k-1$. For \textbf{SSR}, we have a df of k. (Exact reason unclear). For \textbf{SST}, we estimate the global mean and the df is $N - 1$. Notice that $df_{SST} = df_{SSR} + df_{SSE}$.\par
+
+\rmk Here $k$ denotes the number of treatments. Sometimes, we also use $p$ to denote the number of parameters including the constant intercept. Thus, $p=k+1$.
+
+We may generally test some linear constraints of the parameters using the partial-F test.
+$$
+H_0: T\beta =C,\ H_1: T\beta \not=C
+$$
+Under $H_0$, some parameters are replaced by the linear combination and thus we have a \textbf{reduced model}. Notice that $SSR(F) \le SSR(R)$. The test statistics is,
+$$
+F_0 = \frac{(SSE(R) - SSE(F))/(df(R)-df(F))}{SSE(F)/(n-p)}
+$$
+\rmk $df(R)-df(F)$ is simply the number of constraints, sometimes denoted as $q$.\par
+\rmk The set of parameters in the reduced model is always a subset of the parameters in the full model.
+
+\subsection{ANOVA Assumptions}
+\begin{enumerate}
+    \item The samples are independent
+    \item The data are normally distributed
+    \item Each group has the same variance
+\end{enumerate}
+
+\subsection{Analysis of Covariance}
+The analysis of covariance is a method to measure the difference between $k$ groups/treatments of interests (categorical) under the effect of uninterested covariates (numerical) in terms of some single response variable. The response variable is linear correlated with the covariates and the covariates do not affect the difference between treatments (the slope is the same across treatments). \newline
+
+\subsubsection{ANCOVA Model}
+The ANCOVA model is formulated as
+
+$$
+y = Z\alpha + X\beta + \epsilon
+$$
+
+where $Z$ contains 1s and 0s, specifying the treatments; $\alpha$ specifies the group mean; $X$ specifies the value of the covariates; $\beta$ specifies the coefficients for each covariate. 
+
+\subsubsection{One-way Balanced Model with One Covariate}
+Consider the observed data as following
+
+\begin{center}
+\begin{tabular}{ c c c c c c } 
+\hline
+\multicolumn{6}{c}{Treatment}\\
+ \hline
+ \multicolumn{2}{c}{1} & \multicolumn{2}{c}{2} & \multicolumn{2}{c}{3}\\
+ y & x & y & x & y & x \\
+ \hline
+ $y_{11}$ & $x_{11}$ &  $y_{12}$ & $x_{12}$ &  $y_{13}$ & $x_{13}$\\
+ $y_{21}$ & $x_{21}$ &  $y_{22}$ & $x_{22}$ &  $y_{23}$ & $x_{23}$\\
+ $y_{31}$ & $x_{31}$ &  $y_{32}$ & $x_{32}$ &  $y_{33}$ & $x_{33}$\\
+ \hline
+\end{tabular}
+\end{center}
+
+The model for this data can be formulated as
+
+$$
+y_{i,j} = \mu + \alpha_{i} + \beta_{i,j} + \epsilon_{1,j}\ i=1,\cdot,k,\ j=1,\cdot,n
+$$
+where $\mu$ is the global mean, $\alpha_i$ is the treatment effect and $\beta$ is the slope of the covariate. The exact representation in matrix form is as follows:
+
+$$
+Z = \begin{bmatrix}1&1&\cdots&0\\1&0&\cdots&0\\\vdots&&\ddots&\vdots\\1&0&\cdots&1\end{bmatrix},\
+\alpha=\begin{bmatrix}\mu\\ \alpha_1\\ \vdots\\ \alpha_k \end{bmatrix},\
+X = \begin{bmatrix}
+    x_{11} & \hdots & x_{1n}\\ \vdots & & \vdots\\ x_{k1} & \hdots & x_{kn}
+\end{bmatrix}
+$$
+
+\subsubsection{Estimation}
+Reparametrize the equation:
+\begin{align*}
+    y &= Z\alpha + X\beta + \epsilon\\
+      & [Z|X]\begin{bmatrix}
+          \alpha \\ \beta
+      \end{bmatrix} + \epsilon\\
+      &= U\theta + \epsilon
+\end{align*}
+
+Recall the standard procedures to minimize the least squares:
+\begin{align*}
+    U^TU\hat \theta &= U^Ty\\
+    \begin{bmatrix}Z^T\\ X^T \end{bmatrix}[Z\ X]\begin{bmatrix}Z^T\\X^T\end{bmatrix} &= \begin{bmatrix}Z^T\\ X^T \end{bmatrix}y
+\end{align*}
+
+Therefore, 
+
+\begin{align*}
+Z^TZ\hat \alpha + Z^TX\hat \beta = Z^Ty \\
+X^TZ\hat \alpha + X^TX\hat \beta = X^Ty    
+\end{align*}
+
+Notice that matrix $Z$ does not have full rank. Thus, $Z^TZ$'s inverse cannot be determined. Instead, the generalized inverse is desired. Suppose the generalized inverse of $Z^TZ$ exists and is denoted by $(Z^TZ)^-$, then
+\begin{align*}
+    \hat \alpha &= (Z^TZ)^-Z^Ty - (Z^TZ)^-Z^TX\hat \beta\\
+    &= \hat \alpha_0 - (Z^TZ)^-Z^TX\hat \beta
+\end{align*}
+where $\hat \alpha_0$ is the coefficients as in the ANOVA model. \newline
+
+Substitute $\hat \alpha$:
+\begin{align*}
+    X^TZ[(Z^TZ)^-Z^Ty-(Z^TZ)^-Z^TX\hat\beta] + X^TX\hat\beta &= X^Ty\\
+    X^TZ(Z^TZ)^-Z^Ty-X^TZ(Z^TZ)^-Z^TX\hat\beta+X^TX\hat\beta &= X^Ty\\
+    X^TZ(Z^TZ)^-Z^Ty+X^T(I-Z(Z^TZ)^-)X\hat\beta &= X^Ty\\
+    X^T(I-P)X\hat\beta &= X^T(I-P)y\\
+    \hat\beta &= (X^T(I-P)X)^{-1}X^T(I-P)y
+\end{align*}
+where $P=Z(Z^TZ)^-Z^T$ assuming $X^T(I-P)X$ is not singular.
+
+\subsubsection{Hypothesis Testing}
+It is often of interest to test whether one treatment has significant effect on the response. Thus, the null hypothesis is formulated as:
+$$
+    H_0:\alpha_1 = \alpha_2 = ... = \alpha_k
+$$
+Under $H_0$, the reduced model is 
+$$
+    y_{ij} = \mu + \alpha + \beta x_{i,j} + \epsilon_{ij},\ i=1...k,\ j=1...n
+$$
+In total, there are $kn$ observations. Two parameters, $\mu^*=\mu+\alpha\ \&\ \beta$, are estimated. Therefore, the degree of freedom for the SSE of the reduced model is $kn-2$.  Under $H_1$, $1$ coefficient of the covariate and $k$ treatment effects including the global mean are estimated. Therefore the degree of freedom for the full model is $kn-k-1 = k(n-1)-1$. 
+
+\textbf{Partial F-test} is performed to determine if difference between treatment effects or the coefficient of the covariate are significant.
+$$
+    F = \frac{(SSR(F)-SSR(R))/(k-1)}{SSE(F)/(k(n-1)-1)} \sim F_{k-1, k(n-1)-1}
+$$
+\subsection{Weighted Least Square}
+
+
+\subsection{Model Inadequacy}
+Though estimation of the parameters in the multiple regression model does not impose any distribution requirement. Interpreting/analyzing the significance of the model does assume those properties. Otherwise, any conclusion would not be reliable.
+
+\subsubsection{Criteria for Good Models}
+Numerous metrics are developed to quantitatively measure the goodness of fit.
+
+\de $R^2$ The Pearson's Coefficient of Correlation
+
+$$
+R^2 = \frac{SSR}{SST} = 1 - \frac{SSE}{SST}
+$$
+
+\rmk $R^2$ increases as the number of coefficients increases; It does not measure parsimonity.
+
+\de Adjusted $R^2$
+$$
+    Adjusted\ R^2 = 1 - \frac{SSE/(n-p)}{SST/(n-1)} = 1 - \frac{n-1}{n-p}(1-R^2)
+$$
+
+\de Akaike's Information Criterion (AIC)
+AIC measures the plausibility of the model in terms of log-likelihood. Smaller AIC $\implies$ better model
+$$
+    AIC = 2p - 2log(L)
+$$
+where p is the number of parameters and $L$ is the likelihood function.
+
+\de Bayes' Information Criterion
+$$
+BIC = plog(n) - 2log(L)
+$$
+BIC penalize large sample size as well as covariates. 
+
+\de Maillow's Cp
+$$
+C_p = \frac{SSE(p-model)}{MSE(Full Model)} + 2p -n
+$$
+
+\subsubsection{Covariate Selection Algorithm}
+We may select the best set of covariates by performing some iterative method using the goodness-of-fit criteria above.
+\textbf{Forward Selection}
+\textbf{Backward Elimination}
+\textbf{Stepwise Regression}
+
+\subsection{Linear Mixed Effect Model}
+LMM's concern data where subjects form natural groups.  Data within the same group are commonly correlated. Thus, the assumption of independence of the observations is inappropriate. A \textit{fixed effect} is an unknown constant that we would like to estimate; A \textit{random effect} is a random variable and we estimate the parameters that describe the distribution of this random effect.
+
+\subsubsection{Model Setup}
+Given the value of the random effect $\gamma$, $y$ can be modeled as:
+$$
+y = X\beta + Z\gamma + \epsilon\; \text{and}\; y|\gamma \sim N(X\beta+Z\gamma, \sigma^2I)
+$$
+If we further assume that the random effects $\gamma \sim N(0, \sigma^2D)$,
+$$
+    y\sim N(X\beta, \sigma^2ZDZ^T+\sigma^2I)
+$$
+For ANOVA data with r-way random factors, the random effect $Z$ is constructed by stacking r subvectors $\gamma=(\gamma_1^T...\gamma_r^T)^T$. The design matrix $Z=(Z_1...Z_r)$, where $Z_i$ are indicators for the j-th factor. Hence,
+$$
+E(y|\gamma) = X\beta + \sum_{j=1}^{r}Z_j\gamma_j
+$$
+Usually, the random effects from different factors are independent, especially when the factors are nested (e.g. class $\in$ school). Hence, there are many 0 in the covariance matrix of $\gamma$. Thus,
+$$
+Cov(\gamma) = blockdiag(D_{11},...,D_{rr})
+$$
+And,
+$$
+V = var(y) = \sum^{r}_{j=1}\sum^{r}_{j'=1}Z_jD_{jj'}Z^{T}_{j'} + \sigma^2 = \sum^{r}_{j=1}Z_jD_{jj}Z^{T}_{j}+ \sigma^2
+$$
+\subsubsection{Estimate Fixed Effects: Known V}
+Since the variance of $Y$ violates the homoskedacity assumption of ordinary linear regression, we need to use the weighted least square approach to stablize the variance, such that
+$$
+V^{-1/2}y = V^{-1/2}X\beta + V^{-1/2}(Zb+e)
+$$
+Notice that the second term (random part) has variance $I$ and the classical least square estimation can be used to find $\beta$.
+$$
+\hat\beta = (X^TV^{-1}X)^{-1}X^TV^{-1}y
+$$
+If all the inverse exist, the weighted least square estimate is also the MLE under normality assumption. \par
+
+\rmk Generalized inverse is also appropriate if the inverse is not available. In this case $\hat\beta$ is not unique and depends on the choice of the generalized inverse matrix. However, $X\hat\beta$ is invariant since $X(X^TV^{-1}X)^-X^TV^{-1}$ is invariant. Hence, the linear combination of the fixed effects can be estimate.
+\begin{itemize}
+    \item Unbiasness: $E(X\hat\beta)=X\beta$
+    \item Variance: $Var(X\hat\beta)=X(X^TV^{-1}X)^-X^T$
+\end{itemize}
+
+\subsubsection{Estimate Fixed Effects: Unknown V}
+First, estimate $V$ with MLE by optimizing the the log likelihood function:
+$$
+l = -Nlog(2\pi)/2 - log|V|/2 - (y-X\beta)^TV^{-1}(y-X\beta)
+$$
+The exact procedure pending...
+
+Plug-in to obtain the estimate of $\beta$:
+$$
+\hat\beta = (X^T\hat V^{-1}X)^-X^T\hat V^{-1}y
+$$
+\subsubsection{Inference of Fixed Effects}
+Suppose we want to test
+$$
+H_0: K^TX\beta = m
+$$
+where $K$ is a full row rank matrix s.t. ($r_K<r_X$). The linear combination of fixed effects have:
+$$
+K^TX\hat\beta \sim N(K^TX\beta, K^TX(X^TV_{-1}X)^-X^TK)
+$$
+Hence, under $H_0$, the test statistic
+$$
+Q = (K^TX\hat\beta-m)^T[K^TX(X^TV_{-1}X)^-X^TK](K^TX\hat\beta-m)
+$$
+follows a $\chi^2$ distribution with degree of freedom $r_K$.  The rejection rule is the same as regular goodness of fit test such that we reject $H_0$ if $Q$ is too large.
+
+\newpage
+\section{Generalized Linear Regression}
+
+\newpage
+\section{Statistical Machine Learning Theory}
+$$
+\text{Machine Learning} = \text{Theory \& Experience} + \text{Optimization}
+$$
+\subsection{Formal Supervised Learning Model}
+\de Target Function $f:x\to y$ (the true relationship between input x and output y)\par
+\de Training Data $D = \{(\x_1, y),...,(\x_2,y)\}$ where $(\x, y)\sim P$ and the underlying distribution is unknown.\par
+\de  Learning Model $A: \mathbb{R}^P\times \mathbb{R}\to \mathbb{H}$ where $A$ takes an input dataset and output function in the hypothesis calss\par
+\de Hypothesis Class $g\in\mathbb{H}$ is the set of all possible learned functions such that $f\approx g$\par
+
+\subsection{Learn Feasibility}
+\subsection{Probably Approximately Correct Learning}
+\newpage
+\section{Linear Classification Models}
+\de Linear Hypothesis Space $(\vec w, t)\in \mathbb{H}$ such that $g(x) = \begin{cases}
+    1, \text{if } \w^T\x\ge t\\
+    -1, \text{if } \w^T\x<t
+\end{cases}=sign(\w^T\x)$ , where $\w\in\mathbb{R}^{P}$ and $\x\in\mathbb{R}^{P}$. The hypothesis g is a threshold function defined on an affine space in $\mathbb{R}^P$\par
+
+\rmk We often redefine $\w = [w_0,w_1,..,w_P]^T\in\mathbb{R}^{P+1}$  and $\x=[1,x_0,...,x_P]^T\in\mathbb{R}^{P+1}$ to include a bias term in the weights, thus forming an affine space in $\mathbb{R}^P$. \par
+
+\subsection{Perceptron Learning Algorithm}
+
+\begin{algorithm}[H]
+\centering
+% This box will be 50% the width of the text lines on the page
+\begin{minipage}[c]{0.5 \textwidth}
+
+\begin{algorithmic}
+\Procedure{Perceptron\_fit}{$x$, $A$, $p$, $r$}
+\State Initialize $\w=0$
+    \While {$\exists(\x,y)\in D$ such that $g(\x)\not=y$}
+        \State Randomly pick $(\x,y)\in D$ such that $g(\x)\not=y$
+        \State Update $\w_i+1 = \w_i + y\x$
+    \EndWhile
+ \EndProcedure
+\end{algorithmic}
+\end{minipage}
+\end{algorithm}
+
+
+
+\subsection{Support Vector Machine}
+\subsection{Neural Network}
+
+\newpage
+\section{Overfitting}
+Overfitting refers a phenomenon in empirical risk minimization learning such that the picking a hypothesis with lower $E_{in}$ results in higher $E_{out}$. In this case, the in-sample error is no longer a reflective of the out-sample error, and the hypothesis poorly generalizes to unseen data.
+\subsection{Cause of Overfitting}
+Overfitting is commonly caused by too complex hypothesis set. Though a more complex hypothesis set may contain the true target function, the learning algorithm sees the data only and is therefore subjective to noise. Even if there is no noise, the target function may be more complex than the hypothesis set and there is no hope for a perfect fit. In either case, a simpler hypothesis set is more promising in capturing the general trend and significantly reducing the out-sample error. [\textit{Learning from data}  Chapter 4]
+\subsection{Overfitting Properties}
+Define the amount of overfitting as the difference between a complex hypothesis set and a simple hypothesis set. Here is a summary between the extent of overfitting and several properties of a learning problem.
+\begin{center}
+\begin{tabular}{ |c c| } 
+ \hline
+Sample size $\uparrow$ & Overfitting $\downarrow$\\
+Noise $\uparrow$ & Overfitting $\uparrow$\\
+Target Complexity $\uparrow$ & Overfitting $\uparrow$\\
+ \hline
+\end{tabular}
+\end{center}
+
+\subsection{Source of Overfitting}
+The sources of the problem are mainly stochastic noise and deterministic noise. \textbf{Stochastic noise} comes from random which cannot be modeled. \textbf{Deterministic noise} is the difference between the more complex target function and the best approximation available in the hypothesis class. Both types of noises cause the the hypothesis to not capture the true target function. The \textbf{bias-variance decomposition} equation better explains the error quantitatively. 
+$$
+\mathbb{E}_{D}[E_{out}] = \sigma^2 + bias + variance
+$$
+The first term corresponds to the estimation of the stochastic noise; The second term means the systematic bias between the estimation and the true value; The third term is how this estimation is susceptible to the noise. 
+
+\newpage
+\section{Computational Statistics}
+\subsection{Monte Carlo Simulation}
+\subsection{Permutation Test}
+\subsection{Bootstrap}
+
+\newpage
+\section{Regularization}
+
+Regularization is a method to combat overfitting by limiting the size of the hypothesis space. It defines a complexity penalty for each hypothesis and turns the optimization problem to 
+
+$$
+\arg \min_{h\in H} (E_{in} + \Omega(H))
+$$
+where $\Omega(H)$ is the regularizer that measures the complexity of the hypothesis set.
+
+\section{K Nearest Neighbor}
+
+\section{Decision Tree \& Ensemble Learning}
+
+
+
+
+\end{document}
