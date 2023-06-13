@@ -1,0 +1,160 @@
+\documentclass[9pt]{article}
+\usepackage[left=0.7in,right=0.7in,top=1in,bottom=0.7in]{geometry}
+\usepackage{graphicx} % Required for inserting images
+\usepackage[noend]{algpseudocode}
+\usepackage[plain]{algorithm}
+\usepackage{amsmath,amsthm,amssymb,scrextend}
+\usepackage{fancyhdr}
+\usepackage{parskip}
+\pagestyle{fancy}
+
+\setlength\parindent{0pt}
+
+\newcommand{\de}{\textbf{DEF: }}
+\newcommand{\thm}{\textbf{THM: }}
+\newcommand{\pro}{\textbf{Property: }}
+\newcommand{\rmk}{\textbf{RMK: }}
+\newcommand{\indep}{\perp \!\!\! \perp}
+\newcommand{\x}{\vec{x}}
+\newcommand{\w}{\vec{w}}
+
+\newcommand{\N}{\mathbb{N}}
+\newcommand{\Z}{\mathbb{Z}}
+\newcommand{\I}{\mathbb{I}}
+\newcommand{\R}{\mathbb{R}}
+\newcommand{\Q}{\mathbb{Q}}
+\renewcommand{\qed}{\hfill$\blacksquare$}
+\let\newproof\proof
+\renewenvironment{proof}{\begin{addmargin}[1em]{0em}\begin{newproof}}{\end{newproof}\end{addmargin}\qed}
+% \newcommand{\expl}[1]{\text{\hfill[#1]}$}
+
+% preferred pseudocode style
+\algrenewcommand{\algorithmicprocedure}{}
+\algrenewcommand{\algorithmicthen}{}
+ 
+\newenvironment{theorem}[2][Theorem]{\begin{trivlist}
+\item[\hskip \labelsep {\bfseries #1}\hskip \labelsep {\bfseries #2}]}{\end{trivlist}}
+\newenvironment{lemma}[2][Lemma]{\begin{trivlist}
+\item[\hskip \labelsep {\bfseries #1}\hskip \labelsep {\bfseries #2}]}{\end{trivlist}}
+\newenvironment{problem}[2][Problem]{\begin{trivlist}
+\item[\hskip \labelsep {\bfseries #1}\hskip \labelsep {\bfseries #2}]}{\end{trivlist}}
+\newenvironment{exercise}[2][Exercise]{\begin{trivlist}
+\item[\hskip \labelsep {\bfseries #1}\hskip \labelsep {\bfseries #2}]}{\end{trivlist}}
+\newenvironment{reflection}[2][Reflection]{\begin{trivlist}
+\item[\hskip \labelsep {\bfseries #1}\hskip \labelsep {\bfseries #2}]}{\end{trivlist}}
+\newenvironment{proposition}[2][Proposition]{\begin{trivlist}
+\item[\hskip \labelsep {\bfseries #1}\hskip \labelsep {\bfseries #2}]}{\end{trivlist}}
+\newenvironment{corollary}[2][Corollary]{\begin{trivlist}
+\item[\hskip \labelsep {\bfseries #1}\hskip \labelsep {\bfseries #2}]}{\end{trivlist}}
+
+\title{Foundations}
+\author{Tovi Tu}
+\date{May 2023}
+
+\begin{document}
+
+\maketitle
+
+\section{Probability Theory}
+
+\newpage
+\section{Fundamental Theorems}
+
+\de Function f is convex if for $\forall t$ $0\le t\le1$,
+$$
+f(tx_1+(1-t)x_2)\le tf(x-1)+(1-t)f(x_2)
+$$
+
+\de Function $f$ is a $\rho$-Lipschitz function if 
+$$
+||f(\vec u)-f(\vec v)||\le\rho||\vec u - \vec v||
+$$
+
+\begin{theorem}{:}
+Let $A$ be a convex open set, and $f: \mathbb{A}\to\mathbb{R}$ be a convex function, then $f$ is $\rho$-Lipschitz if and only if 
+$$
+\forall\vec w \in A,||\nabla f(\vec w)||\le \rho
+$$
+\end{theorem}
+
+\begin{theorem}{Jensen's Inequality}
+If $f$ is a convex function, 
+$$
+f(\frac{1}{T}\sum_{i}\vec x_i) \le \frac{1}{T}\sum_if(\x_i)
+$$
+\end{theorem}
+
+\subsection{Linear Algebra}
+
+\begin{theorem}{Norms}
+Define a measure of the size of vectors ($L^p$) as 
+$$
+||x||_p = (\sum_i|x_i|^p)^{\frac{1}{p}} \text{ for } p\in \R,p\ge1
+$$
+A norm satisfies the following properties:
+\begin{itemize}
+    \item $f(x) = 0 \implies x=0$
+    \item $f(x+y) \le f(x) + f(y)$ (Triangular Inequality)
+    \item $\forall a\in\R, f(\alpha x) = |\alpha|f(x)$
+\end{itemize}
+\end{theorem}
+
+\rmk $L^2$ Norm (Euclidean Distance)
+$$
+||x||_2 = \sqrt{x^Tx}
+$$
+\textbf{Squared $L^2$ Norm} is favorable because the derivative only depends on each individual component. However, the gradient is small near the origin. 
+
+\rmk $L^1$ Norm 
+$$||x||_1 = \sum_i|x_i|$$
+$L_1$ Norm grows at the same rate anywhere; preferable when the difference between zero and non-zero elements is important. 
+
+\rmk $L^\infty$ (max) Norm
+$$||x||_\infty = max_I|x_i|$$
+
+\begin{theorem}
+    {Frobenius Norm}
+    Measurement of the size of a matrix; analog to the $L^2$ norm.
+    $$||A||_F = \sqrt{\sum_{i,j}A^2_{i,j}}$$
+\end{theorem}
+
+\de Diagonal Matrix
+A matrix D is diagonal iff $\forall i,j\not=0 D_{i,j}\not=0$ Let $v$ be a vector, the corresponding diagonal matrix is denoted as $diag(v)$. \par
+
+\de Eigenvector of a square matrix $A$ is a nonzero vector v such that
+$$Av = \lambda v$$
+where the scalar $\lambda$ is known as the eigenvalue. 
+
+\begin{theorem}
+    {Eigendecomposition}
+    Suppose that a matrix $A$ has $n$ linearly independent eigenvectors $\{v^{(1)},...,v^{(n)}\}$ with corresponding eigenvalues $\{\lambda_1, ..., \lambda_n\}$. Let $V$ = $[v^{(1)}, v^{(n)}]$ and $\lambda = [\lambda_1,...,\lambda_n]^T$. The eigendecomposition of A is given by 
+    
+    $$
+        A = Vdiag(\lambda)V^{-1}
+    $$
+\end{theorem}
+
+\de Definite Matrix
+\begin{itemize}
+    \item Positive Definite: all eigenvalues are positive
+    \item Positive Semi-definite: all eigenvalues are positive or zero
+    \item Negative Definite: all eigenvalues are negative
+    \item Negative Semi-definite: all eigenvalues are negative or zero
+\end{itemize}
+Positive semidefinite matrices imply that $\forall x, x^TAX\ge 0$ and $x^TAx=0\implies x=0$.
+
+\begin{theorem}{Singular Value Decomposition}
+SVD factorizes a matrix into singular vectors and singular values; more applicable than Eigenvalue decomposition: every real matrix has an SVD \par
+
+Suppose that $A$ is an $m\times n$ matrix; $U$ (left singular vectors) is a $m\times m$ matrix, $D$ (singular values) is a $m\times n$ matrix, and $V$ (right singular vectors) is a $n\times n$ matrix. The SVD of $A$ is given by:
+$$
+A = UDV^T
+$$
+where $U$ and $V$ are orthogonal matrices, and D is a diagonal matrix (not necessarily square).
+\end{theorem}
+
+\begin{theorem}{Moore-Penrose Pseudoinverse}
+
+\end{theorem}
+
+\end{document}
