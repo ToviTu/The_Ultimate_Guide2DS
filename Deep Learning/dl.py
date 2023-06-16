@@ -49,6 +49,9 @@ class Module(nn.Module, HyperPrameters):
         self.save_hyperparameters()
         self.board = ProgressBoard()
 
+    def __repr__(self):
+        return "I am a Module object"
+
     def loss(self, y_hat, y):
         raise NotImplementedError
 
@@ -56,29 +59,12 @@ class Module(nn.Module, HyperPrameters):
         assert hasattr(self, "net")
         return self.net(X)
 
-    def plot(self, key, value, train):
-        assert hasattr(self, "trainer")
-        self.board.xlabel = "epoch"
-        if train:
-            x = self.trainer.train_batch_idx / self.trainer.num_train_batches
-            n = self.trainer.num_train_batches / self.plot_train_per_epoch
-        else:
-            x = self.trainer.epoch + 1
-            n = self.trainer.num_val_batches / self.board.draw(
-                x,
-                value.to(tor.cpu()).detach().numpy(),
-                ("train_" if train else "val_") + key,
-                every_n=int(n),
-            )
-
     def training_step(self, batch):
         l = self.loss(self(*batch[:-1]), batch[-1])
-        self.plot("loss", l, train=True)
         return l
 
     def validation_step(self, batch):
         l = self.loss(self(*batch[:-1], batch[-1]))
-        self.plot("loss", l, train=False)
         return l
 
     def configure_optimizer(self):
@@ -102,18 +88,15 @@ class DataModule(HyperPrameters):
 class Trainer(HyperPrameters):
     def __init__(self, max_epochs: int, num_gpus=0, gradient_clip_val=0):
         self.save_hyperparameters()
+        self.train_loss = []
         assert num_gpus == 0
 
     def prepare_data(self, data: DataModule):
         self.train_dataloader = data.train_dataloader()
         self.val_dataloader = data.val_dataloader()
-        self.num_train_batches = len(self.train_dataloader)
-        self.num_val_batches = len(
-            self.val_dataloader if self.val_dataloader is not None else 0
-        )
 
     def prepare_model(self, model: Module):
-        model.trainer = (self,)
+        model.trainer = self
         model.board.xlim = [0, self.max_epochs]
         self.model = model
 
