@@ -1,7 +1,12 @@
 import torch as tor
 import numpy as np
 from torch import nn
+import matplotlib.pyplot as plt
+from matplotlib import rcParams
 import inspect
+import random
+
+rcParams["figure.figsize"] = (6, 4)
 
 
 def add_to_class(Class):
@@ -27,27 +32,10 @@ class HyperPrameters:
                 setattr(self, k, v)
 
 
-class ProgressBoard(HyperPrameters):
-    def __init__(
-        self,
-        xlabel=None,
-        ylabel=None,
-        xlim=None,
-        ylim=None,
-        xscale="linear",
-        yscale="linear",
-    ):
-        self.save_hyperparameters()
-
-    def draw(self, x, y, label, every_n=1):
-        raise NotImplemented
-
-
 class Module(nn.Module, HyperPrameters):
-    def __init__(self, plot_train_per_epoch=2, plot_vlaid_per_epoch=1):
+    def __init__(self):
         super().__init__()
         self.save_hyperparameters()
-        self.board = ProgressBoard()
 
     def __repr__(self):
         return "I am a Module object"
@@ -75,8 +63,19 @@ class DataModule(HyperPrameters):
     def __init__(self, root="./data", num_workers=4):
         self.save_hyperparameters()
 
-    def get_dataloader(self, train):
-        raise NotImplementedError
+    def get_dataloader(self, train=True):
+        if train:
+            indices = list(range(0, self.num_train))
+            random.shuffle(indices)
+        else:
+            indices = list(range(self.num_train, self.num_train + self.num_val))
+
+        for i in range(0, len(indices), self.batch_size):
+            batch_indices = tor.tensor(indices[i : i + self.batch_size])
+            yield self.X[batch_indices], self.y[batch_indices]
+
+    def __len__(self):
+        return self.num_train // self.batch_size
 
     def train_dataloader(self):
         return self.get_dataloader(train=True)
@@ -97,18 +96,43 @@ class Trainer(HyperPrameters):
 
     def prepare_model(self, model: Module):
         model.trainer = self
-        model.board.xlim = [0, self.max_epochs]
         self.model = model
 
+    def prepare_batch(self, batch):
+        return batch
+
     def fit(self, model: Module, data: DataModule):
-        self.prepare_data(data)
         self.prepare_model(model)
         self.optim = model.configure_optimizers()
         self.epoch = 0
         self.train_batch_idx = 0
         self.val_batch_idx = 0
         for self.epoch in range(self.max_epochs):
+            self.prepare_data(data)
             self.fit_epoch()
 
+    def plot_loss(self):
+        plt.plot(range(len(self.train_loss)), self.train_loss)
+
     def fit_epoch(self):
-        raise NotImplementedError
+        for batch in self.train_dataloader:
+            loss = self.model.training_step(self.prepare_batch(batch))
+            self.optim.zero_grad()
+            with tor.no_grad():
+                loss.backward()
+                self.optim.step()
+            self.train_loss.append(loss.item())
+
+
+class SGD(HyperPrameters):
+    def __init__(self, params, eta):
+        self.save_hyperparameters()
+
+    def step(self):
+        for param in self.params:
+            param -= self.eta * param.grad
+
+    def zero_grad(self):
+        for param in self.params:
+            if param.grad is not None:
+                param.grad.zero_()
