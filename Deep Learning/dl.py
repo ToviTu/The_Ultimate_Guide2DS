@@ -60,6 +60,9 @@ class Module(nn.Module, HyperPrameters):
 
 
 class DataModule(HyperPrameters):
+    num_train = 0
+    num_val = 0
+
     def __init__(self, root="./data", num_workers=4):
         self.save_hyperparameters()
 
@@ -88,6 +91,7 @@ class Trainer(HyperPrameters):
     def __init__(self, max_epochs: int, num_gpus=0, gradient_clip_val=0):
         self.save_hyperparameters()
         self.train_loss = []
+        self.val_loss = []
         assert num_gpus == 0
 
     def prepare_data(self, data: DataModule):
@@ -122,6 +126,15 @@ class Trainer(HyperPrameters):
                 loss.backward()
                 self.optim.step()
             self.train_loss.append(loss.item())
+
+        if self.val_dataloader is None:
+            return
+        for batch in self.val_dataloader:
+            with tor.no_grad():
+                self.val_loss.append(
+                    self.model.validation_step(self.prepare_batch(batch))
+                )
+            self.val_batch_idx += 1
 
 
 class SGD(HyperPrameters):
