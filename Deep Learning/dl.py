@@ -52,7 +52,7 @@ class Module(nn.Module, HyperPrameters):
         return l
 
     def validation_step(self, batch):
-        l = self.loss(self(*batch[:-1], batch[-1]))
+        l = self.loss(self(*batch[:-1]), batch[-1])
         return l
 
     def configure_optimizer(self):
@@ -63,7 +63,7 @@ class DataModule(HyperPrameters):
     num_train = 0
     num_val = 0
 
-    def __init__(self, root="./data", num_workers=4):
+    def __init__(self, root="./", num_workers=4):
         self.save_hyperparameters()
 
     def get_dataloader(self, train=True):
@@ -132,7 +132,7 @@ class Trainer(HyperPrameters):
         for batch in self.val_dataloader:
             with tor.no_grad():
                 self.val_loss.append(
-                    self.model.validation_step(self.prepare_batch(batch))
+                    self.model.validation_step(self.prepare_batch(batch)).item()
                 )
             self.val_batch_idx += 1
 
