@@ -55,8 +55,17 @@ class Module(nn.Module, HyperPrameters):
         l = self.loss(self(*batch[:-1]), batch[-1])
         return l
 
-    def configure_optimizer(self):
-        raise NotImplementedError
+    def configure_optimizers(self):
+        assert self.net is not None
+        return SGD(
+            [
+                item
+                for module in self.net
+                if type(module) in [nn.Conv2d, nn.Linear]
+                for item in [module.weight, module.bias]
+            ],
+            self.eta,
+        )
 
 
 class DataModule(HyperPrameters):
@@ -117,24 +126,30 @@ class Trainer(HyperPrameters):
 
     def plot_loss(self):
         plt.plot(range(len(self.train_loss)), self.train_loss)
+        if self.val_loss:
+            plt.plot(range(len(self.val_loss)), self.val_loss)
 
     def fit_epoch(self):
+        batch_loss = []
         for batch in self.train_dataloader:
             loss = self.model.training_step(self.prepare_batch(batch))
             self.optim.zero_grad()
             with tor.no_grad():
                 loss.backward()
                 self.optim.step()
-            self.train_loss.append(loss.item())
+            batch_loss.append(loss.item())
+        self.train_loss.append(np.mean(batch_loss))
 
         if self.val_dataloader is None:
             return
+        batch_loss = []
         for batch in self.val_dataloader:
             with tor.no_grad():
-                self.val_loss.append(
+                batch_loss.append(
                     self.model.validation_step(self.prepare_batch(batch)).item()
                 )
             self.val_batch_idx += 1
+        self.val_loss.append(np.mean(batch_loss))
 
 
 class SGD(HyperPrameters):
