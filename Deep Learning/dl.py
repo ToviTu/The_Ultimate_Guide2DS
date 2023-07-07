@@ -97,7 +97,9 @@ class DataModule(HyperPrameters):
 
 
 class Trainer(HyperPrameters):
-    def __init__(self, max_epochs: int, num_gpus=0, gradient_clip_val=0):
+    def __init__(
+        self, max_epochs: int, num_gpus=0, gradient_clip_val=0, retain_graph=False
+    ):
         self.save_hyperparameters()
         self.train_loss = []
         self.val_loss = []
@@ -135,7 +137,7 @@ class Trainer(HyperPrameters):
             loss = self.model.training_step(self.prepare_batch(batch))
             self.optim.zero_grad()
             with tor.no_grad():
-                loss.backward()
+                loss.backward(retain_graph=self.retain_graph)
                 self.optim.step()
             batch_loss.append(loss.item())
         self.train_loss.append(np.mean(batch_loss))
