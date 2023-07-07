@@ -58,12 +58,7 @@ class Module(nn.Module, HyperPrameters):
     def configure_optimizers(self):
         assert self.net is not None
         return SGD(
-            [
-                item
-                for module in self.net
-                if type(module) in [nn.Conv2d, nn.Linear]
-                for item in [module.weight, module.bias]
-            ],
+            list(self.net.parameters()),
             self.eta,
         )
 
@@ -137,7 +132,7 @@ class Trainer(HyperPrameters):
             loss = self.model.training_step(self.prepare_batch(batch))
             self.optim.zero_grad()
             with tor.no_grad():
-                loss.backward(retain_graph=self.retain_graph)
+                loss.backward()
                 self.optim.step()
             batch_loss.append(loss.item())
         self.train_loss.append(np.mean(batch_loss))
